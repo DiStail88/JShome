@@ -43,13 +43,15 @@
           name: "Глеб Фокин",
           dateTime: "12.02.22 12:18",
           commentText: "Это будет первый комментарий на этой странице",
-          likes: "3"
+          likes: 3,
+          liked: false
         },
         {
           name: "Варвара Н.",
           dateTime: "13.02.22 19:22",
           commentText: "Мне нравится как оформлена эта страница! ❤",
-          likes: "75"
+          likes: 75,
+          liked: false
         }
       ]
       
@@ -58,21 +60,17 @@
 
         for (const commentLike of commentsLikes) {
           commentLike.addEventListener('click', () => {
-            const indexLike = commentLike.dataset.index; 
-            const comment = comments[indexLike]; 
+            const indexLike = commentLike.dataset.index;
+            const comment = comments[indexLike];
       
-            if (commentLike.classList.contains('-active-like')) {
-              comment.likes = parseInt(comment.likes) - 1;
+            if (comment.liked) {
+              comment.likes -= 1;
             } else {
-              comment.likes = parseInt(comment.likes) + 1;
+              comment.likes += 1;
             }
+            comment.liked = !comment.liked; 
       
-
-            const likesCounter = commentLike.previousElementSibling; 
-            likesCounter.textContent = comment.likes; 
-
-            commentLike.classList.toggle('-active-like');
-            
+            renderComments(); 
           })
         }
       }  
@@ -93,7 +91,7 @@
               <div class="comment-footer">
                 <div class="likes">
                   <span class="likes-counter">${comment.likes}</span>
-                  <button class="like-button" data-index = "${index}"></button>
+                  <button class="like-button ${comment.liked ? '-active-like' : ''}" data-index="${index}"></button>
                 </div>
               </div>
             </li>`;
@@ -126,7 +124,7 @@
           return;
         }
 
-        const NewComment = {name: name, dateTime: formattedDateTime, commentText: comment, likes: "0"};
+        const NewComment = {name: name, dateTime: formattedDateTime, commentText: comment, likes: 0, liked: false};
         comments.push(NewComment);
 
 
