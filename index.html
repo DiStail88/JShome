@@ -124,9 +124,13 @@
 
       renderComments();
 
+      function replaceDangerSymbol(input) {
+        return input.replaceAll("<", "&lt;").replaceAll(">", "&gt;");
+    }
+
       buttonEl.addEventListener('click', () => {
-        const name = inputElName.value.replaceAll("<", "&lt").replaceAll(">", "&gt");
-        const comment = inputElComment.value.replaceAll("<", "&lt").replaceAll(">", "&gt");
+        const name = replaceDangerSymbol(inputElName.value);
+        const comment = replaceDangerSymbol(inputElComment.value);
   
         const currentDateTime = new Date();
         const day = String(currentDateTime.getDate()).padStart(2, '0');
