@@ -59,7 +59,8 @@
         const commentsLikes = document.querySelectorAll('.like-button');
 
         for (const commentLike of commentsLikes) {
-          commentLike.addEventListener('click', () => {
+          commentLike.addEventListener('click', (event) => {
+            event.stopPropagation();
             const indexLike = commentLike.dataset.index;
             const comment = comments[indexLike];
       
@@ -74,6 +75,22 @@
           })
         }
       }  
+
+      const initReplyCommet = () => {
+        const commentsReplys = document.querySelectorAll('.comment');
+
+        for (const commentReply of commentsReplys) {
+          commentReply.addEventListener('click', () => {
+            const indexReply = Array.from(commentsReplys).indexOf(commentReply);
+            const comment = comments[indexReply];
+      
+            inputElName.value = comment.name;
+            inputElComment.value = `"${comment.commentText}"`;
+      
+            renderComments(); 
+          })
+        }
+      }
 
       const renderComments = () => {
         const commentHtml = comments.map((comment, index) => {
@@ -101,13 +118,19 @@
 
         initLikeCommet();
 
+        initReplyCommet();
+
       }
 
       renderComments();
 
+      function replaceDangerSymbol(input) {
+        return input.replaceAll("<", "&lt;").replaceAll(">", "&gt;");
+    }
+
       buttonEl.addEventListener('click', () => {
-        const name = inputElName.value;
-        const comment = inputElComment.value;
+        const name = replaceDangerSymbol(inputElName.value);
+        const comment = replaceDangerSymbol(inputElComment.value);
   
         const currentDateTime = new Date();
         const day = String(currentDateTime.getDate()).padStart(2, '0');
