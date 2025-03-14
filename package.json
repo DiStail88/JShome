@@ -1,0 +1,28 @@
+{
+  "name": "jshome",
+  "version": "1.0.0",
+  "description": "https://glebkaf.github.io/webdev-dom-homework/",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DiStail88/JShome.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/DiStail88/JShome/issues"
+  },
+  "homepage": "https://github.com/DiStail88/JShome#readme",
+  "devDependencies": {
+    "@eslint/js": "^9.20.0",
+    "eslint": "^9.20.1",
+    "eslint-config-prettier": "^10.0.1",
+    "eslint-plugin-prettier": "^5.2.3",
+    "globals": "^15.15.0",
+    "prettier": "^3.5.1"
+  }
+}
