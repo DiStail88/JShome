@@ -22,7 +22,8 @@ export const initLikeCommet = () => {
             }
             comment.liked = !comment.liked;
 
-            renderComments();
+            commentLike.classList.toggle("-active-like", comment.liked);
+            commentLike.previousElementSibling.textContent = comment.likes;
         });
     }
 };

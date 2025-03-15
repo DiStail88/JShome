@@ -16,7 +16,7 @@ export const renderComments = () => {
     const commentHtml = comments
         .map((comment) => {
             return `
-    <li class="comment" data-id="${comment.id}>
+    <li class="comment" data-id="${comment.id}">
       <div class="comment-header">
         <div>${comment.author.name}</div>
         <div>${new Date(comment.date).toLocaleString()}</div>

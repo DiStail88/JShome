@@ -28,29 +28,26 @@ buttonEl.addEventListener("click", () => {
         return;
     }
 
-    const NewComment = {
-        text: comment,
-        author: {
-            name: name,
-        },
-    };
-
     fetch("https://wedev-api.sky.pro/api/v1/slava-leb/comments", {
         method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify(NewComment),
+        body: JSON.stringify({
+            text: comment,
+            name: name,
+        }),
     })
-        .then((response) => {
+        .then(async (response) => {
+            const text = await response.text();
             if (!response.ok) {
-                throw new Error("Ошибка сети: " + response.status);
+                throw new Error(`Ошибка сети: ${response.status} - ${text}`);
             }
-            return response.json();
+            return JSON.parse(text);
         })
+        .then(() => {
+            return fetch("https://wedev-api.sky.pro/api/v1/slava-leb/comments");
+        })
+        .then((response) => response.json())
         .then((data) => {
-            console.log("Новый комментарий добавлен:", data);
-            updateComments(data.comments || data);
+            updateComments(data.comments);
             renderComments();
         })
         .catch((error) => {
