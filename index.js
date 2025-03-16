@@ -2,27 +2,32 @@ import { renderComments } from "./modules/renderComments.js";
 import { replaceDangerSymbol } from "./modules/replaceSymbol.js";
 import { updateComments } from "./modules/comments.js";
 
-fetch("https://wedev-api.sky.pro/api/v1/slava-leb/comments", {
-    method: "GET",
-})
-    .then((response) => {
-        return response.json();
+const fetchComments = () => {
+    return fetch("https://wedev-api.sky.pro/api/v1/slava-leb/comments", {
+        method: "GET",
     })
-    .then((data) => {
-        console.log(data);
-        updateComments(data.comments);
-        renderComments();
-    });
+        .then((response) => response.json())
+        .then((data) => {
+            console.log(data);
+            updateComments(data.comments);
+            renderComments();
+        })
+        .catch((error) =>
+            console.error("Ошибка при загрузке комментариев:", error),
+        );
+};
+
+fetchComments();
 
 const buttonEl = document.getElementById("button");
 
 buttonEl.addEventListener("click", () => {
     const inputElName = document.getElementById("name");
     const inputElComment = document.getElementById("comment");
-    const name = replaceDangerSymbol(inputElName.value);
-    const comment = replaceDangerSymbol(inputElComment.value);
+    const name = replaceDangerSymbol(inputElName.value.trim());
+    const comment = replaceDangerSymbol(inputElComment.value.trim());
 
-    if (inputElName.value === "" && inputElComment.value === "") {
+    if (name === "" || comment === "") {
         inputElName.classList.add("error");
         inputElComment.classList.add("error");
         return;
@@ -42,14 +47,7 @@ buttonEl.addEventListener("click", () => {
             }
             return JSON.parse(text);
         })
-        .then(() => {
-            return fetch("https://wedev-api.sky.pro/api/v1/slava-leb/comments");
-        })
-        .then((response) => response.json())
-        .then((data) => {
-            updateComments(data.comments);
-            renderComments();
-        })
+        .then(() => fetchComments())
         .catch((error) => {
             console.error("Ошибка при добавлении комментария:", error);
         });
