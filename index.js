@@ -2,19 +2,34 @@ import { renderComments } from "./modules/renderComments.js";
 import { replaceDangerSymbol } from "./modules/replaceSymbol.js";
 import { updateComments } from "./modules/comments.js";
 
+const loadingEl = document.getElementById("loading");
+
 const fetchComments = () => {
-    return fetch("https://wedev-api.sky.pro/api/v1/slava-leb/comments", {
+    loadingEl.style.display = "block";
+
+    fetch("https://wedev-api.sky.pro/api/v1/slava-leb/comments", {
         method: "GET",
     })
-        .then((response) => response.json())
+        .then((response) => {
+            if (!response.ok) {
+                return response.text().then((errorText) => {
+                    throw new Error(
+                        `Ошибка сети: ${response.status} - ${errorText}`,
+                    );
+                });
+            }
+            return response.json();
+        })
         .then((data) => {
-            console.log(data);
             updateComments(data.comments);
             renderComments();
         })
-        .catch((error) =>
-            console.error("Ошибка при загрузке комментариев:", error),
-        );
+        .catch((error) => {
+            console.error("Ошибка при загрузке комментариев:", error);
+        })
+        .finally(() => {
+            loadingEl.style.display = "none";
+        });
 };
 
 fetchComments();
@@ -33,6 +48,9 @@ buttonEl.addEventListener("click", () => {
         return;
     }
 
+    buttonEl.disabled = true;
+    buttonEl.textContent = "Добавляем комментарий ...";
+
     fetch("https://wedev-api.sky.pro/api/v1/slava-leb/comments", {
         method: "POST",
         body: JSON.stringify({
@@ -48,6 +66,10 @@ buttonEl.addEventListener("click", () => {
             return JSON.parse(text);
         })
         .then(() => fetchComments())
+        .then(() => {
+            buttonEl.disabled = false;
+            buttonEl.textContent = "Написать";
+        })
         .catch((error) => {
             console.error("Ошибка при добавлении комментария:", error);
         });

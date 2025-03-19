@@ -1,5 +1,6 @@
 import { renderComments } from "./renderComments.js";
 import { comments } from "./comments.js";
+import { delay } from "./delay.js";
 
 export const initLikeCommet = () => {
     const commentsLikes = document.querySelectorAll(".like-button");
@@ -15,15 +16,27 @@ export const initLikeCommet = () => {
                 return;
             }
 
-            if (comment.liked) {
-                comment.likes -= 1;
-            } else {
-                comment.likes += 1;
-            }
-            comment.liked = !comment.liked;
+            commentLike.disabled = true;
+            commentLike.classList.add("-loading-like");
 
-            commentLike.classList.toggle("-active-like", comment.liked);
-            commentLike.previousElementSibling.textContent = comment.likes;
+            delay(2000)
+                .then(() => {
+                    comment.likes = comment.liked
+                        ? comment.likes - 1
+                        : comment.likes + 1;
+                    comment.liked = !comment.liked;
+
+                    commentLike.classList.toggle("-active-like", comment.liked);
+                    commentLike.previousElementSibling.textContent =
+                        comment.likes;
+                })
+                .catch((error) => {
+                    console.error("Ошибка при обработке лайка:", error);
+                })
+                .finally(() => {
+                    commentLike.disabled = false;
+                    commentLike.classList.remove("-loading-like");
+                });
         });
     }
 };

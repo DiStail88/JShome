@@ -141,3 +141,31 @@ body {
     border: 2px solid red;
     background-color: #ffe6e6;
   }
+
+  #loading{
+    font-family: Helvetica;
+    font-size: 32px;
+    color: #bcec30;
+    background: #202020;
+    padding-top: 50px;
+    padding-left: 630px;
+  }
+
+  @keyframes rotating {
+    from {
+       transform: rotate(0deg);
+    }
+    25% {
+       transform: rotate(30deg);;
+    }
+    75% {
+       transform: rotate(-30deg);;
+    }
+    to {
+       transform: rotate(0deg);
+    }
+ }
+ 
+ .-loading-like {
+    animation: rotating 2s linear infinite;
+ }
