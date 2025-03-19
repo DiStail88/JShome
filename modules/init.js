@@ -7,8 +7,13 @@ export const initLikeCommet = () => {
     for (const commentLike of commentsLikes) {
         commentLike.addEventListener("click", (event) => {
             event.stopPropagation();
-            const indexLike = commentLike.dataset.index;
-            const comment = comments[indexLike];
+            const id = parseInt(commentLike.dataset.id);
+            const comment = comments.find((c) => c.id === id);
+
+            if (!comment) {
+                console.error("Комментарий не найден!");
+                return;
+            }
 
             if (comment.liked) {
                 comment.likes -= 1;
@@ -17,7 +22,8 @@ export const initLikeCommet = () => {
             }
             comment.liked = !comment.liked;
 
-            renderComments();
+            commentLike.classList.toggle("-active-like", comment.liked);
+            commentLike.previousElementSibling.textContent = comment.likes;
         });
     }
 };
@@ -29,11 +35,16 @@ export const initReplyCommet = () => {
 
     for (const commentReply of commentsReplys) {
         commentReply.addEventListener("click", () => {
-            const indexReply = Array.from(commentsReplys).indexOf(commentReply);
-            const comment = comments[indexReply];
+            const id = parseInt(commentReply.dataset.id);
+            const comment = comments.find((c) => c.id === id);
 
-            inputElName.value = comment.name;
-            inputElComment.value = `"${comment.commentText}"`;
+            if (!comment) {
+                console.error("Комментарий не найден!");
+                return;
+            }
+
+            inputElName.value = comment.author.name;
+            inputElComment.value = `"${comment.text}"`;
 
             renderComments();
         });
