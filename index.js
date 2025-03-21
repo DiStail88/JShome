@@ -3,9 +3,12 @@ import { replaceDangerSymbol } from "./modules/replaceSymbol.js";
 import { updateComments } from "./modules/comments.js";
 
 const loadingEl = document.getElementById("loading");
+let isFirstLoad = true;
 
 const fetchComments = () => {
-    loadingEl.style.display = "block";
+    if (isFirstLoad) {
+        loadingEl.style.display = "block";
+    }
 
     fetch("https://wedev-api.sky.pro/api/v1/slava-leb/comments", {
         method: "GET",
@@ -28,7 +31,10 @@ const fetchComments = () => {
             console.error("Ошибка при загрузке комментариев:", error);
         })
         .finally(() => {
-            loadingEl.style.display = "none";
+            if (isFirstLoad) {
+                loadingEl.style.display = "none";
+                isFirstLoad = false;
+            }
         });
 };
 
