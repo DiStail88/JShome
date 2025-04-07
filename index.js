@@ -9,7 +9,6 @@ const fetchComments = () => {
     if (isFirstLoad) {
         loadingEl.style.display = "block";
     }
-
     fetch("https://wedev-api.sky.pro/api/v1/slava-leb/comments", {
         method: "GET",
     })
@@ -57,29 +56,64 @@ buttonEl.addEventListener("click", () => {
     buttonEl.disabled = true;
     buttonEl.textContent = "Добавляем комментарий ...";
 
-    fetch("https://wedev-api.sky.pro/api/v1/slava-leb/comments", {
-        method: "POST",
-        body: JSON.stringify({
-            text: comment,
-            name: name,
-        }),
-    })
-        .then(async (response) => {
-            const text = await response.text();
-            if (!response.ok) {
-                throw new Error(`Ошибка сети: ${response.status} - ${text}`);
-            }
-            return JSON.parse(text);
-        })
-        .then(() => fetchComments())
-        .then(() => {
-            buttonEl.disabled = false;
-            buttonEl.textContent = "Написать";
-        })
-        .catch((error) => {
-            console.error("Ошибка при добавлении комментария:", error);
-        });
+    const MAX_RETRIES = 3; // Максимальное количество попыток
+    let retryCount = 0;
 
-    inputElName.value = "";
-    inputElComment.value = "";
+    function sendComment() {
+        fetch("https://wedev-api.sky.pro/api/v1/slava-leb/comments", {
+            method: "POST",
+            body: JSON.stringify({
+                text: comment,
+                name: name,
+            }),
+        })
+            .then((response) => {
+                if (response.status === 201) {
+                    return response.json();
+                } else {
+                    if (response.status === 400) {
+                        throw new Error(
+                            "Вы допустили ошибку, минимум 3 символа!",
+                        );
+                    }
+
+                    if (response.status === 500) {
+                        if (retryCount < MAX_RETRIES) {
+                            retryCount++;
+                            console.log(
+                                `Повторная попытка ${retryCount}/${MAX_RETRIES}...`,
+                            );
+                            return sendComment();
+                        } else {
+                            throw new Error(
+                                "Сервер не отвечает, поробуйте позже",
+                            );
+                        }
+                    }
+
+                    throw new Error("Что-то пошло не так");
+                }
+            })
+            .then((responseData) => {
+                console.log("Успешно отправлено:", responseData);
+                fetchComments();
+                inputElName.value = "";
+                inputElComment.value = "";
+            })
+            .catch((error) => {
+                if (error.message === "Failed to fetch") {
+                    alert("Что-то пошло не так");
+                    inputElName.value = "";
+                    inputElComment.value = "";
+                } else {
+                    alert(error.message);
+                }
+            })
+            .finally(() => {
+                buttonEl.disabled = false;
+                buttonEl.textContent = "Написать";
+            });
+    }
+
+    sendComment();
 });
